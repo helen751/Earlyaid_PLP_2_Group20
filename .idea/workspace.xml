@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb276687-5bf2-4313-ade6-956ddfeff8c5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/colored_message.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db_connect.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/questions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/questions_insert.sql" afterDir="false" />
-    </list>
+    <list default="true" id="eb276687-5bf2-4313-ade6-956ddfeff8c5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -141,7 +136,7 @@
       <option name="presentableId" value="Default" />
       <updated>1752187539412</updated>
       <workItem from="1752187540517" duration="4647000" />
-      <workItem from="1752830984273" duration="20038000" />
+      <workItem from="1752830984273" duration="20745000" />
     </task>
     <servers />
   </component>
@@ -151,7 +146,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Earlyaid_PLP_2_Group20$earlyaid_database.coverage" NAME="earlyaid_database Coverage Results" MODIFIED="1752832143598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Earlyaid_PLP_2_Group20$db_connect.coverage" NAME="db_connect Coverage Results" MODIFIED="1752873417206" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Earlyaid_PLP_2_Group20$questions.coverage" NAME="questions Coverage Results" MODIFIED="1752875161046" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Earlyaid_PLP_2_Group20$questions.coverage" NAME="questions Coverage Results" MODIFIED="1752875839838" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Earlyaid_PLP_2_Group20$main.coverage" NAME="main Coverage Results" MODIFIED="1752830999430" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
