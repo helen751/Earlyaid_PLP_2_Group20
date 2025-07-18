@@ -9,6 +9,7 @@ class db_connect():
         self.port = "20881"  # Default MySQL port
         self.database = "earlyaid_db"
         self.user = "avnadmin"
+        self.password = "AVNS_OpDfbrT75J5ncPh1a5q"
 
 
     def connect_to_db(self):
