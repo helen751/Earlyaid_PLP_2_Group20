@@ -1,4 +1,5 @@
 import mysql.connector
+import colored_message
 from mysql.connector import Error
 
 
@@ -11,6 +12,7 @@ class db_connect():
         self.database = "earlyaid_db"
         self.user = "avnadmin"
         self.password = "AVNS_OpDfbrT75J5ncPh1a5q"
+        self.coloredMessage = colored_message.ColoredMessage()
 
     #function to establish the database connection
     def connect_to_db(self):
@@ -24,25 +26,23 @@ class db_connect():
             )
             #print this, if successful
             if connection.is_connected():
-                print("Connection to MySQL database successful!")
                 return connection
 
         except Error as e:
-            print(f"Error: {e}")
+            self.coloredMessage.print(f"\nError: Failed to connect to MySQL, please check your internet connection!", "red")
             return None
 
     # Close database connection
     def close_connection(self, connection):
         if connection.is_connected():
             connection.close()
-            print("Connection closed.")
 
     # the execute select query function for all select statements
-    def execute_select_query(self, connection, query):
+    def execute_select_query(self, connection, query, params=None):
 
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute(query)
+            cursor.execute(query, params)
 
             # Fetch and return the result
             result = cursor.fetchall()

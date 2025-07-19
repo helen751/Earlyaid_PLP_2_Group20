@@ -1,24 +1,33 @@
+import random
+
 import db_connect
 import colored_message
 
 class question:
     def __init__(self):
         self.connection = None
-        self.question = question
+        self.questions_id = []
         self.db = db_connect.db_connect()
         self.coloredMessage = colored_message.ColoredMessage()
+        self.age = 0
+        self.child_name = None
 
     def ask_question(self, age, child_name):
-        answers = []
+        answers = {}
+        self.age = age
+        self.child_name = child_name
+
+        self.coloredMessage.print("Fetching questions...", "blue")
+
+        #connecting to the cloud database
         self.connection = self.db.connect_to_db()
 
         if self.connection:
             # query to get all the questions for child age
             query = "SELECT * FROM questions where start_age <="+str(age)+" and end_age >="+str(age)+";"
 
-            #opening the connection, executing the query and closing the connection
+            #opening the connection and executing the query
             questions = self.db.execute_select_query(self.connection, query)
-            self.db.close_connection(self.connection)
 
             #loop through the list of questions and ask the user each question
             for each_question in questions:
@@ -27,18 +36,133 @@ class question:
 
                 correct_choice = False
 
+                #loop to keep asking question until user enters a valid choice
                 while not correct_choice:
                     self.coloredMessage.print(f'\n{each_question["question_text"]} ', "blue")
-                    print(f' 1] {each_question["option_a"]} '
+                    print(f' 1] {each_question["option_a"]}'
                           f'\n 2] {each_question["option_b"]}')
 
                     choose = input("Select a valid option(1 or 2): ")
                     if choose == "1" or choose == "2":
                         correct_choice = True
-                        answers.append(choose)
+                        answers[each_question["question_id"]] = choose
+                        self.questions_id.append(each_question["question_id"])
 
                     else:
                         self.coloredMessage.print("Invalid choice please select either 1 or 2", "red")
 
-            print(answers)
-question().ask_question(2, "favour")
+            #calling the function to analyse all answers
+            self.coloredMessage.print("\n\tAnalysing your answers, please wait...\n", "blue")
+            self.analyse_question(answers, age)
+
+
+    #function to analyse the answers and risk levels
+    def analyse_question(self, answers, age):
+        question_id_list = []
+
+        #checking for questions the user answered YES to the symptoms
+        for question_id, answer in answers.items():
+            if answer == "1":
+                question_id_list.append(question_id)
+
+        question_id_placeholders = ', '.join(['%s'] * len(question_id_list))
+
+        #checking if the established database connection is still active
+        if self.connection:
+
+            # query to get all quest risks and analyse
+            query = (
+                f"SELECT s.risk_level, s.advice "
+                f"FROM question_risks r "
+                f"INNER JOIN suggestions s ON r.suggestion_code = s.suggestion_code "
+                f"WHERE r.min_age <= %s AND r.max_age >= %s AND r.question_id IN ({question_id_placeholders});"
+            )
+            params = [age, age] + question_id_list
+            #opening the connection and executing the query
+            result = self.db.execute_select_query(self.connection, query, params)
+
+            #calling the analyse risk function to analyse the query result
+            self.analyse_risk(result)
+
+        else:
+            self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
+
+
+    def analyse_risk(self, suggestions):
+        risk_level = []
+        total_risk_level = 0
+        risk = "Low"
+
+        for each_suggestion in suggestions:
+            risk_level.append(each_suggestion["risk_level"])
+            total_risk_level += int(each_suggestion["risk_level"])
+
+        if total_risk_level >= 10:
+            risk = "High"
+
+        elif total_risk_level >= 7:
+            risk = "Medium"
+
+        elif 3 in risk_level:
+            risk = "High"
+
+        self.final_suggestion(suggestions, risk)
+
+
+    def final_suggestion(self, suggestions, risk_level):
+        if risk_level == "Low":
+            self.coloredMessage.print(f"\n\t_______RISK LEVEL: LOW_________"
+                                      f"\nYou don't need to panic. {self.child_name} is going through a mild reaction that you can manage for a few days", "blue")
+
+        elif risk_level == "Medium":
+            self.coloredMessage.print(f"\n\t_______RISK LEVEL: MEDIUM_________"
+                                      f"\n {self.child_name}'s symptoms are moderate, But it is important you monitor closely for any improvement or worsening", "yellow")
+
+        elif risk_level == "High":
+            self.coloredMessage.print("\n\t_______RISK LEVEL: HIGH_________"
+                                      "\nSerious case identified here! you need to act immediately", "red")
+
+        #fetching suggestions for all cases and personalising it by displaying the child's name in between.
+        i = 1
+        for each_suggestion in suggestions:
+            each_suggestion["advice"] = each_suggestion["advice"].replace("the child", self.child_name)
+            each_suggestion["advice"] = each_suggestion["advice"].replace("the baby", self.child_name)
+            print(f' {i}] {each_suggestion["advice"]}')
+            i+=1
+
+        if risk_level == "High" or risk_level == "Medium":
+            #check for a suitable doctor in the doctors database and refer the user
+            if self.connection:
+
+                # query to get all quest risks and analyse
+                query = (
+                    f"SELECT name, specialty, phone, location "
+                    f"FROM doctors "
+                    f"WHERE start_age_group <= %s AND end_age_group >= %s and risk_level = %s;"
+                )
+                params = [self.age, self.age, risk_level]
+                # opening the connection and executing the query
+                doctors = self.db.execute_select_query(self.connection, query, params)
+
+                # Select a random doctor from the list of all qualified and possible doctors
+                doctor = random.choice(doctors)
+                print("\n")
+
+                if risk_level == "Medium":
+                    self.coloredMessage.print(f'Contact {doctor["name"].upper()} if symptoms worsens any moment!', "blue")
+
+                elif risk_level == "High":
+                    self.coloredMessage.print(f'{self.child_name} needs an immediate attention. Give first aid and Contact {doctor["name"].upper()} immediately', "red")
+
+                print(f'\t Phone Number: {doctor["phone"]}')
+                print(f'\t Location: {doctor["location"]}')
+                print(f'\t Specialty: {doctor["specialty"]}\n')
+
+            else:
+                self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
+
+
+
+
+
+question().ask_question(1, "favour")
