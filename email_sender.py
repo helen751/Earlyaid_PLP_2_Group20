@@ -2,9 +2,7 @@ import smtplib  # Library to send emails through SMTP
 from email.message import EmailMessage
 
 def send_email_to_parent(parent_email, child_name, risk_level, suggestion):
-    """
-    This function sends the results to the parent email based on the risk level.
-    """
+    """This function sends the results to the parent email based on the risk level."""
 
     msg = EmailMessage()  # Create a new empty email object
     msg['Subject'] = f"earlyaid Health Update for {child_name}"  # Subject line
