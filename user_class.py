@@ -31,7 +31,7 @@ class User:
         cursor.execute("""
             INSERT INTO users_parent (user_id, name, email, password)
             VALUES (%s, %s, %s,%s)
-        """, (16,self.name, self.email, self.password1))
+        """, (18,self.name, self.email, self.password1))
         connect1.commit()
         
         cursor.close()
@@ -48,25 +48,55 @@ class User:
 
         children_no=int(input("How many children do you have under 12 years? "))
         for i in range (children_no):
-            self.child_name = input("Please please input child no.{i}'s name:  ")
+            self.child_name = input(f"Please please provide child no.{i}'s name:  ")
             self.age = input("Please input their age: ")
             self.prev_diagnosis = input(f" Does {self.child_name} have any previous diagnosis or underlying conditions?")
             cursor.execute("""
             INSERT INTO children (user_id,child_id,name, age, prev_diagnosis)
             VALUES (%s,%s, %s, %s,%s)
-            """, (15,2, self.name, self.age, self.prev_diagnosis))
+            """, (18,4, self.name, self.age, self.prev_diagnosis))
             connect1.commit()
         
             print(f" Your child: {self.child_name} has been registered ")
         cursor.close()
         connect1.close()
-
+        print("All your children have been registered successfully!\n")
 
     def Login(self):
-        self.email= input("Please input your email: ")
-        self.password1 = input("Please input your account password: ")
+        db_connect1=db_connect()
+        connect1 = db_connect1.connect_to_db()
+        cursor = connect1.cursor()
 
-        self.child_details = input("Which child would you like to examine?: ")
+        self.email= input("Please input your email: ")
+        login_query = "SELECT password FROM users_parent WHERE email =%s"
+        cursor.execute(login_query, (self.email,))
+        output = cursor.fetchone()
+        #try calling the reg login,ask yes onr no questions,while loop
+        if output is None:
+            print("This email is not registered, please register first before logging in or use as guest user")
+        else:
+            self.password1 = input("Please input your account password: ")
+            if self.password1 == output[0]:
+                print("You have succesfully logged in. Welcome to Early Aid! ")
+        cursor.commit()
+        
+        
+        child_query = "SELECT child_name FROM children WHERE user_id = %s"
+        cursor.execute(child_query, (18,))
+        child_output = cursor.fetchall()
+        for i, child in enumerate(child_output,start = 1):
+            print(f"{i}.{child[0]}")
+
+        child_choice = int(input("Which child would you like to examine?(choose a number): "))
+        
+        cursor.commit()
+        cursor.close()
+        connect1.close()
+
+        
+        selected_child = child_output[child_choice-1][0]
+        print(f"You have selected {selected_child} for examination.")
+
     def Guest(self):
         self.child_age =input("Please input your child's age: ")
         self.prev_diagnosis = input(" Does your child have any previous diagnosis or underlying conditions?: ")
