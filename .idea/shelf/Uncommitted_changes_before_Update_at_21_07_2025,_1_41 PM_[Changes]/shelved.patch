@@ -1,0 +1,208 @@
+Index: email_sender.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import smtplib  # Library to send emails through SMTP\nfrom email.message import EmailMessage\nimport colored_message\n\nclass EmailSender:\n    def __init__(self):\n        self.coloredMessage = colored_message.ColoredMessage()\n        self.coloredMessage.print(\"\\n\\tSending email. Please wait...\", \"green\")\n\n    def send_email_to_parent(self, parent_email, child_name, risk_level, suggestion):\n        \"\"\"This function sends the results to the parent email based on the risk level.\"\"\"\n\n        msg = EmailMessage()  # Create a new empty email object\n        msg['Subject'] = f\"Earlyaid Health Update for {child_name}\"  # Subject line\n        msg['From'] = \"earlyaid.notify@gmail.com\"  # This email has been created especially for the earlyaid app\n        msg['To'] = parent_email  # Parent's email\n\n        # Customize the suggestion based on the risk level\n        if risk_level == \"High\":\n            suggestion = (\n                \"Our assessment indicates that your child's symptoms may require urgent medical attention. \"\n                \"We strongly recommend that you visit a healthcare provider as soon as possible. \"\n                \"Please do not delay in seeking professional care.\"\n            )\n        elif risk_level == \"Moderate\":\n            suggestion = (\n                \"Your child's symptoms may not be critical at the moment, but we encourage you to continue monitoring closely. \"\n                \"If symptoms persist or worsen, consider consulting a healthcare provider for further guidance.\"\n            )\n        else:  # Low risk\n            suggestion = (\n                \"Your child's responses suggest that there are no urgent health concerns at the moment. \"\n                \"However, we encourage you to stay attentive and provide care as necessary. \"\n                \"If you notify any unusual symptoms later, please restart another session with the earlyaid app to get more advice.\"\n            )\n\n        msg.set_content(f\"\"\"\n            Hello,\n            Here is the result of {child_name}'s earlyaid health check:\n            \n            Risk level: {risk_level}\n            \n            \uD83D\uDCCCRecommendation:\n            {suggestion}\n            \n            \n            NOTE: earlyaid is a support tool and does not make a medication diagnosis.\n            Always consult a licenced doctor for proper diagnosis and treatment.\n            \n            Thank you for using earlyaid!\n            Stay healthy,\n            -The earlyaid Team\n            \"\"\")\n\n        # Connect to Gmail's SMTP server and send the email securely\n        try:\n            with smtplib.SMTP_SSL(\"smtp.gmail.com\", 465) as smtp:\n                # Log in using the app's email and App password\n                smtp.login(\"earlyaid.notify@gmail.com\", \"fvip arbm sebr ptgt\")\n\n                # Send the message\n                smtp.send_message(msg)\n\n                self.coloredMessage.print(f\"Email sent to {parent_email} successfully!\", \"green\")\n\n        except Exception as e:  # Show an error message if there is a fail in sending the email\n            print(f\"Error: Failed to send email to {parent_email}: {e}\")
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/email_sender.py b/email_sender.py
+--- a/email_sender.py	(revision c2e3c4306e0817c1387fd47187792794dc7ad5f2)
++++ b/email_sender.py	(date 1753097987007)
+@@ -1,67 +1,53 @@
+ import smtplib  # Library to send emails through SMTP
+ from email.message import EmailMessage
+-import colored_message
+ 
+-class EmailSender:
+-    def __init__(self):
+-        self.coloredMessage = colored_message.ColoredMessage()
+-        self.coloredMessage.print("\n\tSending email. Please wait...", "green")
+-
+-    def send_email_to_parent(self, parent_email, child_name, risk_level, suggestion):
+-        """This function sends the results to the parent email based on the risk level."""
++def send_email_to_parent(parent_email, child_name, risk_level, suggestion, short_topic, doctor_details = None):
++    """
++    This function sends the results to the parent email based on the risk level.
++    """
+ 
+-        msg = EmailMessage()  # Create a new empty email object
+-        msg['Subject'] = f"Earlyaid Health Update for {child_name}"  # Subject line
+-        msg['From'] = "earlyaid.notify@gmail.com"  # This email has been created especially for the earlyaid app
+-        msg['To'] = parent_email  # Parent's email
++    msg = EmailMessage()  # Create a new empty email object
++    msg['Subject'] = f"earlyaid Health Update for {child_name}"  # Subject line
++    msg['From'] = "earlyaid.notify@gmail.com"  # This email has been created especially for the earlyaid app
++    msg['To'] = parent_email  # Parent's email
+ 
+-        # Customize the suggestion based on the risk level
+-        if risk_level == "High":
+-            suggestion = (
+-                "Our assessment indicates that your child's symptoms may require urgent medical attention. "
+-                "We strongly recommend that you visit a healthcare provider as soon as possible. "
+-                "Please do not delay in seeking professional care."
+-            )
+-        elif risk_level == "Moderate":
+-            suggestion = (
+-                "Your child's symptoms may not be critical at the moment, but we encourage you to continue monitoring closely. "
+-                "If symptoms persist or worsen, consider consulting a healthcare provider for further guidance."
+-            )
+-        else:  # Low risk
+-            suggestion = (
+-                "Your child's responses suggest that there are no urgent health concerns at the moment. "
+-                "However, we encourage you to stay attentive and provide care as necessary. "
+-                "If you notify any unusual symptoms later, please restart another session with the earlyaid app to get more advice."
+-            )
+ 
+-        msg.set_content(f"""
+-            Hello,
+-            Here is the result of {child_name}'s earlyaid health check:
+-            
+-            Risk level: {risk_level}
+-            
+-            📌Recommendation:
+-            {suggestion}
+-            
+-            
+-            NOTE: earlyaid is a support tool and does not make a medication diagnosis.
+-            Always consult a licenced doctor for proper diagnosis and treatment.
+-            
+-            Thank you for using earlyaid!
+-            Stay healthy,
+-            -The earlyaid Team
+-            """)
++    msg.set_content(f"""
++Hello User,
++
++Here is the result of {child_name}'s earlyaid health check:
++
++📌 CHILD NAME: {child_name}
++🧪 Risk level: {risk_level}
++
++{short_topic}
++
++📌 RECOMMENDATION:
++-----------------------
++{suggestion}
++-----------------------
++
++{doctor_details}
++
++NOTE: earlyaid is a support tool and does not make a real medication diagnosis.
++Always consult a licenced doctor for proper diagnosis and treatment.
++
++Thank you for using earlyaid!
++
++Stay healthy,
++The Earlyaid Team
++""")
+ 
+-        # Connect to Gmail's SMTP server and send the email securely
+-        try:
+-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+-                # Log in using the app's email and App password
+-                smtp.login("earlyaid.notify@gmail.com", "fvip arbm sebr ptgt")
++    # Connect to Gmail's SMTP server and send the email securely
++    try:
++        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
++            # Log in using the app's email and App password
++            smtp.login("earlyaid.notify@gmail.com", "fvip arbm sebr ptgt")
+ 
+-                # Send the message
+-                smtp.send_message(msg)
++            # Send the message
++            smtp.send_message(msg)
+ 
+-                self.coloredMessage.print(f"Email sent to {parent_email} successfully!", "green")
++            print(f"Email sent to {parent_email} successfully!")
+ 
+-        except Exception as e:  # Show an error message if there is a fail in sending the email
+-            print(f"Error: Failed to send email to {parent_email}: {e}")
+\ No newline at end of file
++    except Exception as e:  # Show an error message if there is a fail in sending the email
++        print(f"Error: Failed to send email to {parent_email}: {e}")
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"eb276687-5bf2-4313-ade6-956ddfeff8c5\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/dataSources.local.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/dataSources.local.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"SQL File\" />\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;helen751&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/helen751/Earlyaid_PLP_2_Group20.git&quot;,\n    &quot;accountId&quot;: &quot;dedfaf2e-0449-4cc1-94ae-ec9787f7e3ea&quot;\n  }\n}</component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 8\n}</component>\n  <component name=\"ProjectId\" id=\"2zhe4MCw8GHu81OYwiWhbXpQHws\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\n    &quot;Python.db_connect.executor&quot;: &quot;Run&quot;,\n    &quot;Python.earlyaid_database.executor&quot;: &quot;Run&quot;,\n    &quot;Python.main.executor&quot;: &quot;Run&quot;,\n    &quot;Python.questions.executor&quot;: &quot;Run&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\n    &quot;last_opened_file_path&quot;: &quot;/Users/MAC/PycharmProjects/Earlyaid_PLP_2_Group20&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  },\n  &quot;keyToStringList&quot;: {\n    &quot;DatabaseDriversLRU&quot;: [\n      &quot;mysql&quot;,\n      &quot;sqlite&quot;\n    ]\n  }\n}</component>\n  <component name=\"RunManager\" selected=\"Python.main\">\n    <configuration name=\"earlyaid_database\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"Earlyaid_PLP_2_Group20\" />\n      <option name=\"ENV_FILES\" value=\"\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/earlyaid_database.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\n      <module name=\"Earlyaid_PLP_2_Group20\" />\n      <option name=\"ENV_FILES\" value=\"\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Python.earlyaid_database\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141\" />\n        <option value=\"bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"eb276687-5bf2-4313-ade6-956ddfeff8c5\" name=\"Changes\" comment=\"\" />\n      <created>1752187539412</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1752187539412</updated>\n      <workItem from=\"1752187540517\" duration=\"4647000\" />\n      <workItem from=\"1752830984273\" duration=\"44319000\" />\n      <workItem from=\"1753083139735\" duration=\"2855000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/Earlyaid_PLP_2_Group20$earlyaid_database.coverage\" NAME=\"earlyaid_database Coverage Results\" MODIFIED=\"1752832143598\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n    <SUITE FILE_PATH=\"coverage/Earlyaid_PLP_2_Group20$db_connect.coverage\" NAME=\"db_connect Coverage Results\" MODIFIED=\"1752920782355\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n    <SUITE FILE_PATH=\"coverage/Earlyaid_PLP_2_Group20$questions.coverage\" NAME=\"questions Coverage Results\" MODIFIED=\"1752957412806\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n    <SUITE FILE_PATH=\"coverage/Earlyaid_PLP_2_Group20$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1752830999430\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision c2e3c4306e0817c1387fd47187792794dc7ad5f2)
++++ b/.idea/workspace.xml	(date 1753098045794)
+@@ -5,8 +5,7 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="eb276687-5bf2-4313-ade6-956ddfeff8c5" name="Changes" comment="">
+-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/email_sender.py" beforeDir="false" afterPath="$PROJECT_DIR$/email_sender.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -44,32 +43,32 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+-    &quot;Python.db_connect.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.earlyaid_database.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.questions.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;/Users/MAC/PycharmProjects/Earlyaid_PLP_2_Group20&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ModuleVcsDetector.initialDetectionPerformed": "true",
++    "Python.db_connect.executor": "Run",
++    "Python.earlyaid_database.executor": "Run",
++    "Python.main.executor": "Run",
++    "Python.questions.executor": "Run",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "RunOnceActivity.git.unshallow": "true",
++    "git-widget-placeholder": "Merging main",
++    "last_opened_file_path": "/Users/MAC/PycharmProjects/Earlyaid_PLP_2_Group20",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "settings.editor.selected.configurable": "preferences.lookFeel",
++    "vue.rearranger.settings.migration": "true"
+   },
+-  &quot;keyToStringList&quot;: {
+-    &quot;DatabaseDriversLRU&quot;: [
+-      &quot;mysql&quot;,
+-      &quot;sqlite&quot;
++  "keyToStringList": {
++    "DatabaseDriversLRU": [
++      "mysql",
++      "sqlite"
+     ]
+   }
+-}</component>
++}]]></component>
+   <component name="RunManager" selected="Python.main">
+     <configuration name="earlyaid_database" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+       <module name="Earlyaid_PLP_2_Group20" />
+@@ -140,7 +139,7 @@
+       <updated>1752187539412</updated>
+       <workItem from="1752187540517" duration="4647000" />
+       <workItem from="1752830984273" duration="44319000" />
+-      <workItem from="1753083139735" duration="2855000" />
++      <workItem from="1753083139735" duration="5245000" />
+     </task>
+     <servers />
+   </component>

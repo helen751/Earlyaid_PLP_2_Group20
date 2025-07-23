@@ -2,6 +2,8 @@ import random
 
 import db_connect
 import colored_message
+import email_sender
+from email_sender import EmailSender
 
 class question:
     def __init__(self):
@@ -11,11 +13,13 @@ class question:
         self.coloredMessage = colored_message.ColoredMessage()
         self.age = 0
         self.child_name = None
+        self.parent_name = None
 
-    def ask_question(self, age, child_name):
+    def ask_question(self, age, child_name, parent_email):
         answers = {}
         self.age = age
         self.child_name = child_name
+        self.parent_name = parent_email
 
         self.coloredMessage.print("Fetching questions...", "blue")
 
@@ -110,24 +114,33 @@ class question:
 
 
     def final_suggestion(self, suggestions, risk_level):
+        doctor_details = None
+        short_topic = None
+
         if risk_level == "Low":
+            short_topic = f"You don't need to panic. {self.child_name} is going through a mild reaction that you can manage for a few days"
             self.coloredMessage.print(f"\n\t_______RISK LEVEL: LOW_________"
-                                      f"\nYou don't need to panic. {self.child_name} is going through a mild reaction that you can manage for a few days", "blue")
+                                      f"\n{short_topic}", "blue")
 
         elif risk_level == "Medium":
+            short_topic = f"{self.child_name}'s symptoms are moderate, But it is important you monitor closely for any improvement or worsening"
             self.coloredMessage.print(f"\n\t_______RISK LEVEL: MEDIUM_________"
-                                      f"\n {self.child_name}'s symptoms are moderate, But it is important you monitor closely for any improvement or worsening", "yellow")
+                                      f"\n {short_topic}", "yellow")
 
         elif risk_level == "High":
+            short_topic = "Serious case identified here! you need to act immediately"
             self.coloredMessage.print("\n\t_______RISK LEVEL: HIGH_________"
-                                      "\nSerious case identified here! you need to act immediately", "red")
+                                      f"\n{short_topic}", "red")
 
         #fetching suggestions for all cases and personalising it by displaying the child's name in between.
         i = 1
+        email_suggestions = ""
+
         for each_suggestion in suggestions:
             each_suggestion["advice"] = each_suggestion["advice"].replace("the child", self.child_name)
             each_suggestion["advice"] = each_suggestion["advice"].replace("the baby", self.child_name)
             print(f' {i}] {each_suggestion["advice"]}')
+            email_suggestions += f'{i}] {each_suggestion["advice"]}\n'
             i+=1
 
         if risk_level == "High" or risk_level == "Medium":
@@ -149,14 +162,21 @@ class question:
                 print("\n")
 
                 if risk_level == "Medium":
-                    self.coloredMessage.print(f'Contact {doctor["name"].upper()} if symptoms worsens any moment!', "blue")
+                    doctor_details = f'Contact {doctor["name"].upper()} if symptoms worsens any moment!'
+                    self.coloredMessage.print(doctor_details, "blue")
 
                 elif risk_level == "High":
-                    self.coloredMessage.print(f'{self.child_name} needs an immediate attention. Give first aid and Contact {doctor["name"].upper()} immediately', "red")
+                    doctor_details = f'{self.child_name} needs an immediate attention. Give first aid and Contact {doctor["name"].upper()} immediately'
+                    self.coloredMessage.print(doctor_details, "red")
 
-                print(f'\t Phone Number: {doctor["phone"]}')
-                print(f'\t Location: {doctor["location"]}')
-                print(f'\t Specialty: {doctor["specialty"]}\n')
+                doctor_details += f'\n\t Phone Number: {doctor["phone"]}'+f'\n\t Location: {doctor["location"]}'+f'\n\t Specialty: {doctor["specialty"]}\n'
+                print(f'\n\t Phone Number: {doctor["phone"]}'+f'\n\t Location: {doctor["location"]}'+f'\n\t Specialty: {doctor["specialty"]}\n')
+                print()
+
+                email_sender.EmailSender().send_email_to_parent(self.parent_name, self.child_name, risk_level, email_suggestions, short_topic, doctor_details)
+
+
+
 
             else:
                 self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
@@ -165,4 +185,4 @@ class question:
 
 
 
-question().ask_question(1, "favour")
+question().ask_question(1, "favour", "okerekehelenugoeze@gmail.com")
