@@ -18,7 +18,7 @@ class User:
         cursor = connect1.cursor()
 
         self.name=input("Please input your name: ")
-        self.email=input("Please input your email ")
+        self.email=input("Please input your email: ")
         while True:
             self.password1 = input("Please input your account passoerd: ")
             self.password = input("Please input your passowrd again: ")
@@ -37,7 +37,6 @@ class User:
         cursor.close()
         connect1.close()
 
-        print(f"Dear {self.name} your account has been succesfully registered!\n")
         print("Please provide your child's details for registration")
 
     def Child_details(self):
@@ -54,7 +53,8 @@ class User:
             
             cursor.execute("SELECT user_id FROM users_parent WHERE email = %s",(self.email,))
             parent_id = cursor.fetchone()[0]
-            
+            connect1.commit()
+
             cursor.execute("""
             INSERT INTO children (user_id,name, age, prev_diagnosis)
             VALUES (%s,%s,%s,%s)
@@ -65,14 +65,16 @@ class User:
             print(f" Your child: {self.child_name} has been registered ")
         cursor.close()
         connect1.close()
-        print("All your children have been registered successfully!\n")
+        print("All your children have been registered, and your account has been created")
+
 
     def Login(self):
         db_connect1=db_connect()
         connect1 = db_connect1.connect_to_db()
         cursor = connect1.cursor()
 
-        self.email= input("Please input your email: ")
+        print("Welcome back! Please login to your account")
+        self.email= input("Please input your account email: ")
         login_query = "SELECT password FROM users_parent WHERE email =%s"
         cursor.execute(login_query, (self.email,))
         output = cursor.fetchone()
@@ -108,19 +110,19 @@ class User:
 
     def user_acess(self):
         self.user_choice = input("How would you want to access our app? input either 1,2,or 3:\n1. Register\n2. Login\n3. Guest\n")
-        match self.user_choice:
-            case "1":
-                self.Reg_user()
-                self.Child_details()
-                self.Login()
-            case "2":
-                self.Login()
-            case "3":
-                print("Accesing app as guest ")
-                self.Guest()
+        if self.user_choice == "1":
+            self.Reg_user()
+            self.Child_details()
+            self.Login()
+        elif self.user_choice== "2":
+            self.Login()
+        elif self.user_choice== "3":
+            print("Accesing app as guest ")
+            self.Guest()
+        else:
+            print("Invalid input, please try again")
+            self.user_acess()
     
-   
-
 
 user1=User()
 user1.user_acess()          
