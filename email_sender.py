@@ -36,6 +36,10 @@ Thank you for using earlyaid!
 
 Stay healthy,
 The Earlyaid Team
+
+
+—
+If you did not sign up for EarlyAid or believe this message was sent to you by mistake, please disregard it. No action is required.
 """)
 
     # Connect to Gmail's SMTP server and send the email securely
@@ -51,3 +55,5 @@ The Earlyaid Team
 
     except Exception as e:  # Show an error message if there is a fail in sending the email
         print(f"Error: Failed to send email to {parent_email}: {e}")
+    except smtplib.SMTPRecipientsRefused:  # Show an error message if the email address is not valid
+        print("The email address you entered is invalid. Please enter your email.")
