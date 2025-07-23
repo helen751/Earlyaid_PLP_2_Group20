@@ -14,12 +14,12 @@ def connect_db():
             print('✅ Connected to the database.')
             return connection
     except mysql.connector.Error as e:
-        print(f'❌ Error: {e}')
+        print(f'Error: {e}')
         return None
 
 
 def add_question(cursor):
-    print("\n📌 Adding a new yes/no question.")
+    print("\n Adding a new yes/no question.")
     question_text = input("Enter your yes/no question (e.g., 'Is the child coughing frequently?'): ").strip()
     start_age = int(input("Enter the start age for this question: "))
     end_age = int(input("Enter the end age for this question: "))
@@ -30,7 +30,7 @@ def add_question(cursor):
         suggestion_code = input("Enter a unique suggestion code for this question (e.g., CUS1): ").strip().upper()
         cursor.execute("SELECT 1 FROM question_risks WHERE suggestion_code = %s", (suggestion_code,))
         if cursor.fetchone():
-            print("❌ That suggestion code already exists. Please enter a different one.")
+            print("That suggestion code already exists. Please enter a different one.")
         else:
             break
 
@@ -48,11 +48,11 @@ def add_question(cursor):
         VALUES (%s, %s, %s, %s, %s)
     """, (question_id, start_age, end_age, risk_level, suggestion_code))
 
-    print("✅ Question and risk successfully added.")
+    print("Question and risk successfully added.")
 
 
 def delete_question(cursor):
-    print("\n🗑️ Deleting a question.")
+    print("\nDeleting a question.")
     question_text = input("Enter the exact question text to delete: ").strip()
 
     # Find question ID
@@ -65,7 +65,7 @@ def delete_question(cursor):
         cursor.execute("DELETE FROM questions WHERE question_id = %s", (question_id,))
         print("✅ Question and associated risk deleted.")
     else:
-        print("❌ No question found with that text.")
+        print("No question found with that text.")
 
 
 def main():
@@ -87,11 +87,11 @@ def main():
         elif action == 'Q':
             break
         else:
-            print("❗ Please enter a valid option: A, D, or Q.")
+            print("Please enter a valid option: A, D, or Q.")
 
     cursor.close()
     conn.close()
-    print("🔚 Done.")
+    print(" Done.")
 
 
 if __name__ == "__main__":
