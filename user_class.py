@@ -110,16 +110,18 @@ class User:
 
     def user_acess(self):
         self.user_choice = input("How would you want to access our app? input either 1,2,or 3:\n1. Register\n2. Login\n3. Guest\n")
-        match self.user_choice:
-            case "1":
-                self.Reg_user()
-                self.Child_details()
-                self.Login()
-            case "2":
-                self.Login()
-            case "3":
-                print("Accesing app as guest ")
-                self.Guest()
+        if self.user_choice == "1":
+            self.Reg_user()
+            self.Child_details()
+            self.Login()
+        elif self.user_choice== "2":
+            self.Login()
+        elif self.user_choice== "3":
+            print("Accesing app as guest ")
+            self.Guest()
+        else:
+            print("Invalid input, please try again")
+            self.user_acess()
     
 
 user1=User()
