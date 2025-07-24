@@ -259,25 +259,27 @@ class User:
                 print(f"{i}.{child[0]}")
             while True:
                 child_choice = input("Which child would you like to examine?(choose a number): ")
-                if not 1 <= int(child_choice) <= len(child_output):
-                    print("Invalid choice, please choose a valid child number")
+                if not child_choice.isdigit():
+                    print("Your choice should be a number, please try again")
                 elif not child_choice:
                     print("The field is empty, please type a valid input")
-                elif not child_choice.isdigit():
-                    print("Your choice should be a number, please try again")
+                elif not 1 <= int(child_choice) <= len(child_output):
+                    print("Invalid choice, please choose a valid child number")     
                 else:
                     break
 
-        
-        # Closing the cursor and connection
+        # Closing the cursor and database connection
         cursor.close()
         connect1.close()
 
-        
+        #display the selected child
         selected_child = child_output[child_choice-1][0]
         print(f"You have selected {selected_child} for examination.")
 
+    #allows the user to access the app as a guest without necessarily registering
     def Guest(self):
+
+        #child name entry and input validation
         while True:
                 self.child_name = input("Please input your child's name: ")
                 if not self.child_name:
@@ -288,6 +290,8 @@ class User:
                     print("Your child's name should be between 3 and 50 characters long, please try again")
                 else:
                     break
+
+        #child age entry and input validation
         while True:
             self.age = (input(f"Please input {self.child_name}'s age: ")).strip()
             if not self.age:
@@ -298,21 +302,20 @@ class User:
                 print("Your child's age should be between 0 and 12 years, please try again")
             else:
                 break
-            #Should we have a list of common conditions for previous diagnosis?
 
-            while True:
-                self.prev_diagnosis = input(f"Does {self.child_name} have any previous diagnosis or underlying conditions? ")
-                if not self.prev_diagnosis:
-                    print("The field is empty, please type a valid input")
-                elif not any (char.isalpha() for char in self.prev_diagnosis):
-                    print("Your input should contain at least one alphabetic character, please try again")
-                elif len(self.prev_diagnosis)<4:
-                    print("Your input should be at least 4 characters long, please try again")
-                else:
-                    break   
-        self.child_age =input("Please input your child's age: ")
-        self.prev_diagnosis = input(" Does your child have any previous diagnosis or underlying conditions?: ")
-
+        #previous diagnosis entry and input validation
+        while True:
+            self.prev_diagnosis = input(f"Does {self.child_name} have any previous diagnosis or underlying conditions? ")
+            if not self.prev_diagnosis:
+                print("The field is empty, please type a valid input")
+            elif not any (char.isalpha() for char in self.prev_diagnosis):
+                print("Your input should contain at least one alphabetic character, please try again")
+            elif len(self.prev_diagnosis)<4:
+                print("Your input should be at least 4 characters long, please try again")
+            else:
+                break   
+            
+    #method which allows the user to access the app through whichever method they decide to.
     def user_acess(self):
         self.user_choice = input("How would you want to access our app? input either 1,2,or 3:\n1. Register\n2. Login\n3. Guest\n")
         if self.user_choice == "1":
@@ -329,7 +332,7 @@ class User:
             print("Invalid input, please try again")
             self.user_acess()
     
-
+#instantiating the user user access method
 user1=User()
 user1.user_acess()         
 
