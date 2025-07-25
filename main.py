@@ -30,7 +30,7 @@ def show_instructions():
 def main():
     """Main function that displays welcome screen and calls user_class functionality"""
     try:
-        # Display welcome screen FIRST the others
+        # Display welcome screen FIRST then others
         display_welcome()
 
         display_about()
@@ -58,7 +58,9 @@ def main():
     except Exception as e:
         print(f"⚠️ An unexpected error occurred: {e}")
         print("   Please contact support or try again.")
-
+  # Optional: show full traceback for debugging
+            traceback.print_exc()
+            break
 
 if __name__ == "__main__":
     main()
