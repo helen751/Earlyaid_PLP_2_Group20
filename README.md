@@ -4,50 +4,47 @@ EarlyAid is a terminal-based Python tool designed to guide users through structu
 
 A brief Description of the Project Files:
 
-.idea - IDE settings (optional)
-pycache - Python cache files (auto-generated)
-earlyaid_schema.sql - SQL file with the database schema
+.idea - IDE settings (This is an optional file)
+pycache - Python cache files (the file is also auto-generated)
+earlyaid_schema.sql - This is an SQL file with the database schema
 README.md - Project overview and usage instructions
-colored_message.py - Displays colored output for better UX
-db_connect.py - Connects to the Aiven-hosted MySQL database
-email_sender.py - Sends session results via email
-exit_or_restart.py - Asks whether to exit or restart
-main.py - Main entry point of the app
-populate_questions.py - Adds default questions to the database
-questions.py - Handles fetching and managing questions
-save_session.py - Saves answers to the database
-user_class.py - Defines the User class
-README.db - Explanation of database structure
+colored_message.py - This  file Displays colored output for better User experience
+db_connect.py - This file Connects to the Aiven-hosted MySQL database
+email_sender.py - This file is incharge for Sending session results via email
+exit_or_restart.py - This file Asks the user whether to exit or restart
+main.py - This file is the Main entry point of the app
+populate_questions.py - This file Adds default questions to the database
+questions.py - This file Handles fetching and managing questions
+save_session.py - This file Saves answers to the database
+user_class.py - This file Defines the User class
 
-How to Run the Program:
 
-Clone the repository
+How can one Run the Program:
+
+1st Step: Clone the repository
 
 git clone git@github.com:helen751/Earlyaid_PLP_2_Group20.git
 cd Earlyaid_PLP_2_Group20
 
-Install dependencies
+2nd Step: Install relevant dependencies
 
 Install the MySQL connector for Python:
 
 pip install mysql-connector-python
 
-Configure your database connection
+3rd Step : Configure your database connection
 
 Open the file db_connect.py and edit the connection details to match your Aiven.io MySQL setup:
 
-host = "your-aiven-host"
-user = "your-username"
-password = "your-password"
-database = "your-database-name"
-port = your-port
-ssl_ca = "path/to/ca.pem" (if your Aiven setup uses SSL)
+host = "earlyaid-groupwork-earlyaid.f.aivencloud.com"
+user = "avnadmin"
+password = "AVNS_OpDfbrT75J5ncPh1a5q"
+database = "defaultdb"
+port = 20881
+ssl = REQUIRED
 
-Note: In production, use environment variables or a secure config file instead of hardcoding passwords.
 
-(Optional) Set up the schema and add sample questions
-
-Use any MySQL client or Python to run earlyaid_schema.sql to create the tables.
+4th Step : Use any MySQL client or Python to run earlyaid_schema.sql to create the tables.
 To add sample questions to the database, run:
 
 python populate_questions.py
@@ -70,9 +67,9 @@ Allows the user to restart or exit
 
 Terminal interface with colored messages
 
-Requirements:
+**************** The Requirements For this application:
 
-Python 3.6 or newer
+Python 3.9 or newer
 
 Internet connection to access Aiven.io database
 
@@ -92,12 +89,8 @@ email_sender.py - Sends results to email if user agrees
 exit_or_restart.py - Gives restart or exit choice
 README.db - Description of the database design
 
-Security Tips:
-
-Do not hardcode sensitive credentials.
-Use .env files or environment variables to keep passwords and hostnames secure.
 
 Contributors:
 
-Developed by Group 20 – ALU PLP Program
-Maintained by: helen751 on GitHub
+Developed by Group 20 – ALU PLP Program              ----------25th/07/2025
+
