@@ -6,27 +6,25 @@ then calls the main user_class.py functionality.
 
 
 def display_welcome():
-    print("-" * 70)
+    print(">_<" * 1)
     print("👶🩺 Welcome to Early Aid - Child Health Evaluation System 🩺👶".center(70))
-    print("-" * 70)
+    print("_" * 70)
     print("\nEarly Aid helps caregivers, monitor and assess the health of children aged 0 to 12.")
     print("Through guided questions, it detects early signs of illness and advises accordingly.\n")
 
 
 def display_about():
-    print("\nAbout Early Aid:")
-    print("Early Aid is a command-line tool designed to help caregivers monitor and assess")
-    print("the health of children aged 0 to 12 through symptom-based guided questions.")
-    print("It aims to detect early signs of illness, provide risk assessments, and recommend")
-    print("appropriate actions including medical consultation.")
-    print("It is designed to support user data, children profiles, doctors, questions, risks, suggestions, and responses./n")
+    print("📘ABOUT EARLY AID:\n")
+    print("Early Aid is a command-line tool designed to help caregivers assess and monitor")
+    print("the health of children aged 0 to 12. It guides users through symptom-based questions,")
+    print("analyzes the risk level, and provides personalized advice or urgent care recommendations.\n")
 
 def show_instructions():
-    print("How to use Early Aid:")
-    print("1. Register - Create a secure profile to track multiple children and save history.")
-    print("2. Login - Access your saved profiles and previous assessments.")
-    print("3. Continue as Guest - Perform a quick health check without saving data.\n")
-    print("Registration is recommended for a personalized and saved experience.\n")
+    print("🛠️HOW TO USE:\n")
+    print("1️⃣  Register - Create a profile to save your children's health assessments.")
+    print("2️⃣  Login - Access saved data and continue previous sessions.")
+    print("3️⃣  Continue as Guest - Do a one-time health check without saving info.\n")
+    print("✨ Tip: Registering gives you personalized suggestions and stores your progress.\n")
 
 
 def main():
@@ -34,7 +32,9 @@ def main():
     try:
         # Display welcome screen FIRST the others
         display_welcome()
+
         display_about()
+
         show_instructions()
 
         # Wait for user to see the welcome message
@@ -56,10 +56,9 @@ def main():
         print(f"   Make sure user_class.py is in the same directory.")
         print(f"   Error details: {e}")
     except Exception as e:
-        print(f"❌ An unexpected error occurred: {e}")
+        print(f"⚠️ An unexpected error occurred: {e}")
         print("   Please contact support or try again.")
 
 
 if __name__ == "__main__":
     main()
-
