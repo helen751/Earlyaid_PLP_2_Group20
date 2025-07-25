@@ -55,12 +55,9 @@ def main():
         print("❌ Error: Could not import user_class module.")
         print(f"   Make sure user_class.py is in the same directory.")
         print(f"   Error details: {e}")
-    except Exception as e:
-        print(f"⚠️ An unexpected error occurred: {e}")
-        print("   Please contact support or try again.")
-  # Optional: show full traceback for debugging
-            traceback.print_exc()
-            break
-
+    #except Exception as e:
+     #   print(f"⚠️ An unexpected error occurred: {e}")
+      #  print("   Please contact support or try again.")
+ 
 if __name__ == "__main__":
     main()
