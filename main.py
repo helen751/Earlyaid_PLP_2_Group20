@@ -12,6 +12,14 @@ def display_welcome():
     print("\nEarly Aid helps caregivers monitor and assess the health of children aged 0 to 12.")
     print("Through guided questions, it detects early signs of illness and advises accordingly.\n")
 
+
+def display_about():
+    print("\nAbout Early Aid:")
+    print("Early Aid is a command-line tool designed to help caregivers monitor and assess")
+    print("the health of children aged 0 to 12 through symptom-based guided questions.")
+    print("It aims to detect early signs of illness, provide risk assessments, and recommend")
+    print("appropriate actions including medical consultation.\n")
+
 def show_instructions():
     print("How to use Early Aid:")
     print("1. Register - Create a secure profile to track multiple children and save history.")
