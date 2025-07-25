@@ -1,14 +1,14 @@
 """
 EarlyAid Welcome Interface
-This module provides the welcome screen and instructions for the EarlyAid system,
+This module provides the welcome screen, about and instructions for the EarlyAid system,
 then calls the main user_class.py functionality.
 """
 
 
 def display_welcome():
-    print("=" * 70)
+    print("-" * 70)
     print("👶🩺 Welcome to Early Aid - Child Health Evaluation System 🩺👶".center(70))
-    print("=" * 70)
+    print("-" * 70)
     print("\nEarly Aid helps caregivers monitor and assess the health of children aged 0 to 12.")
     print("Through guided questions, it detects early signs of illness and advises accordingly.\n")
 
@@ -18,7 +18,8 @@ def display_about():
     print("Early Aid is a command-line tool designed to help caregivers monitor and assess")
     print("the health of children aged 0 to 12 through symptom-based guided questions.")
     print("It aims to detect early signs of illness, provide risk assessments, and recommend")
-    print("appropriate actions including medical consultation.\n")
+    print("appropriate actions including medical consultation.")
+    print("It is designed to support user data, children profiles, doctors, questions, risks, suggestions, and responses./n")
 
 def show_instructions():
     print("How to use Early Aid:")
