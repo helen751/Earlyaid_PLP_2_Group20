@@ -6,7 +6,7 @@ then calls the main user_class.py functionality.
 
 
 def display_welcome():
-    print(">_<" * 1)
+    print("✨>_<" * 1)
     print("👶🩺 Welcome to Early Aid - Child Health Evaluation System 🩺👶".center(70))
     print("_" * 70)
     print("\nEarly Aid helps caregivers, monitor and assess the health of children aged 0 to 12.")
@@ -39,7 +39,7 @@ def main():
 
         # Wait for user to see the welcome message
         input("\n🚀 Press ENTER to continue to EarlyAid...")
-        print("\n" + "-" * 50)
+        print("\n" + "_" * 50)
 
         # Import the teammate's user_class module
         from user_class import USER  # Adjust import based on their class name
