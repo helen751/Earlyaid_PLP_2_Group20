@@ -9,7 +9,7 @@ def display_welcome():
     print("-" * 70)
     print("👶🩺 Welcome to Early Aid - Child Health Evaluation System 🩺👶".center(70))
     print("-" * 70)
-    print("\nEarly Aid helps caregivers monitor and assess the health of children aged 0 to 12.")
+    print("\nEarly Aid helps caregivers, monitor and assess the health of children aged 0 to 12.")
     print("Through guided questions, it detects early signs of illness and advises accordingly.\n")
 
 
@@ -32,12 +32,14 @@ def show_instructions():
 def main():
     """Main function that displays welcome screen and calls user_class functionality"""
     try:
-        # Display welcome screen FIRST
+        # Display welcome screen FIRST the others
         display_welcome()
+        display_about()
+        show_instructions()
 
         # Wait for user to see the welcome message
         input("\n🚀 Press ENTER to continue to EarlyAid...")
-        print("\n" + "=" * 50)
+        print("\n" + "-" * 50)
 
         # Import the teammate's user_class module
         from user_class import USER  # Adjust import based on their class name
