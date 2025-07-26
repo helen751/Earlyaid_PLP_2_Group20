@@ -131,7 +131,7 @@ class User:
                 print("Your input should be a number, please try again")
             else :
                 break
-        for i in range (children_no):
+        for i in range (int (children_no)):
 
             # child name entry and input validation
             while True:
@@ -151,7 +151,7 @@ class User:
                 if not self.age:
                     print("The field is empty, please type a valid input")
                 elif not self.age.isdigit():
-                    print("Your child's age should be a number, please try again")
+                    print("Your child's age should be a whole number, please try again")
                 elif not 0 <= int(self.age) <= 12:
                     print("Your child's age should be between 0 and 12 years, please try again")
                 else:
@@ -260,7 +260,7 @@ class User:
             while True:
                 child_choice = input("Which child would you like to examine?(choose a number): ")
                 if not child_choice.isdigit():
-                    print("Your choice should be a number, please try again")
+                    print("Your choice should be a whole number, please try again")
                 elif not child_choice:
                     print("The field is empty, please type a valid input")
                 elif not 1 <= int(child_choice) <= len(child_output):
@@ -273,7 +273,7 @@ class User:
         connect1.close()
 
         #display the selected child
-        selected_child = child_output[child_choice-1][0]
+        selected_child = child_output[int(child_choice)-1][0]
         print(f"You have selected {selected_child} for examination.")
 
     #allows the user to access the app as a guest without necessarily registering
