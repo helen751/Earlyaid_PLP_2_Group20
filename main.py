@@ -58,9 +58,6 @@ def main():
     except Exception as e:
         print(f"⚠️ An unexpected error occurred: {e}")
         print("   Please contact support or try again.")
-  # Optional: show full traceback for debugging
-            traceback.print_exc()
-            break
-
+ 
 if __name__ == "__main__":
     main()
