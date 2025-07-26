@@ -18,12 +18,33 @@ def connect_db():
         return None
 
 # This function is for adding a new yes/no question to the database
-# It will prompt the user for the question text, age range, risk level, suggestion code, and suggestion text.
+# It includes validation for age and duplicate questions
 def add_question(cursor):
     print("\nAdding a new yes/no question.")
-    question_text = input("Enter your yes/no question (e.g., 'Is the child coughing frequently?'): ").strip()
-    start_age = int(input("Enter the start age for this question: "))
-    end_age = int(input("Enter the end age for this question: "))
+    
+    # Check for duplicate question
+    while True:
+        question_text = input("Enter your yes/no question (e.g., 'Is the child coughing frequently?'): ").strip()
+        cursor.execute("SELECT 1 FROM questions WHERE question_text = %s", (question_text,))
+        if cursor.fetchone():
+            print("This question already exists in the database. Please enter a different question.")
+        else:
+            break
+
+    # Get valid age input
+    while True:
+        try:
+            start_age = int(input("Enter the start age for this question: "))
+            end_age = int(input("Enter the end age for this question: "))
+            if start_age > 12 or end_age > 12:
+                print("Start and end age must be less than or equal to 12.")
+            elif start_age > end_age:
+                print("Start age cannot be greater than end age.")
+            else:
+                break
+        except ValueError:
+            print("Please enter a valid number for age.")
+
     risk_level = int(input("Enter the risk level (1-5): "))
 
     # Ensure that the suggestion code is unique
