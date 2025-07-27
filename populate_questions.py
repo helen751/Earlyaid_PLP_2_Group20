@@ -11,20 +11,41 @@ def connect_db():
             ssl_disabled=False
         )
         if connection.is_connected():
-            print('✅ Connected to the database.')
+            print('Connected to the database.')
             return connection
     except mysql.connector.Error as e:
         print(f'Error: {e}')
         return None
 
-#This function is for adding a new yes/no question to the database
-#It will prompt the user for the question text, age range, risk level, and a unique suggestion code and insert it to the questions and risks tables
+# This function is for adding a new yes/no question to the database
+# It includes validation for age and duplicate questions
 def add_question(cursor):
-    print("\n Adding a new yes/no question.")
-    question_text = input("Enter your yes/no question (e.g., 'Is the child coughing frequently?'): ").strip()
-    start_age = int(input("Enter the start age for this question: "))
-    end_age = int(input("Enter the end age for this question: "))
-    risk_level = int(input("Enter the risk level (1–5): "))
+    print("\nAdding a new yes/no question.")
+    
+    # Check for duplicate question
+    while True:
+        question_text = input("Enter your yes/no question (e.g., 'Is the child coughing frequently?'): ").strip()
+        cursor.execute("SELECT 1 FROM questions WHERE question_text = %s", (question_text,))
+        if cursor.fetchone():
+            print("This question already exists in the database. Please enter a different question.")
+        else:
+            break
+
+    # Get valid age input
+    while True:
+        try:
+            start_age = int(input("Enter the start age for this question: "))
+            end_age = int(input("Enter the end age for this question: "))
+            if start_age > 12 or end_age > 12:
+                print("Start and end age must be less than or equal to 12.")
+            elif start_age > end_age:
+                print("Start age cannot be greater than end age.")
+            else:
+                break
+        except ValueError:
+            print("Please enter a valid number for age.")
+
+    risk_level = int(input("Enter the risk level (1-5): "))
 
     # Ensure that the suggestion code is unique
     while True:
@@ -35,6 +56,8 @@ def add_question(cursor):
         else:
             break
 
+    suggestion_text = input("Enter the advice or suggestion for this question: ").strip()
+
     # Insert the new question into the questions table
     cursor.execute("""
         INSERT INTO questions (start_age, end_age, question_text, option_a, option_b)
@@ -43,15 +66,21 @@ def add_question(cursor):
 
     question_id = cursor.lastrowid
 
-    # Insert risks into the question_risks table
+    # Insert into question_risks table
     cursor.execute("""
         INSERT INTO question_risks (question_id, min_age, max_age, risk_level, suggestion_code)
         VALUES (%s, %s, %s, %s, %s)
     """, (question_id, start_age, end_age, risk_level, suggestion_code))
 
-    print("Question and risk successfully added.")
+    # Insert into suggestions table the suggestion code, risk level as well as advice
+    cursor.execute("""
+        INSERT INTO suggestions (suggestion_code, risk_level, advice)
+        VALUES (%s, %s, %s)
+    """, (suggestion_code, risk_level, suggestion_text))
 
-#This function is for deleting a question from the database
+    print("Question, risk, and suggestion successfully added.")
+
+# This function is for deleting a question from the database
 def delete_question(cursor):
     print("\nDeleting a question.")
     question_text = input("Enter the exact question text to delete: ").strip()
@@ -62,12 +91,19 @@ def delete_question(cursor):
 
     if result:
         question_id = result[0]
+
+        # Get the suggestion_code before deleting
+        cursor.execute("SELECT suggestion_code FROM question_risks WHERE question_id = %s", (question_id,))
+        code_result = cursor.fetchone()
+        if code_result:
+            suggestion_code = code_result[0]
+            cursor.execute("DELETE FROM suggestions WHERE suggestion_code = %s", (suggestion_code,))
+
         cursor.execute("DELETE FROM question_risks WHERE question_id = %s", (question_id,))
         cursor.execute("DELETE FROM questions WHERE question_id = %s", (question_id,))
-        print("Question and associated risk deleted.")
+        print("Question and associated data deleted.")
     else:
         print("No question found with that text.")
-
 
 def main():
     conn = connect_db()
@@ -75,7 +111,6 @@ def main():
         return
 
     cursor = conn.cursor()
-# Loop to allow the user to choose if they want to add or delete the questions or if they want to quit.
     while True:
         action = input("\nDo you want to (A)dd a question, (D)elete a question, or (Q)uit? ").strip().upper()
 
@@ -92,8 +127,7 @@ def main():
 
     cursor.close()
     conn.close()
-    print(" Done.")
-
+    print("Done.")
 
 if __name__ == "__main__":
     main()
