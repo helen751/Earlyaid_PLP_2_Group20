@@ -124,12 +124,12 @@ class User:
         #children no entry and input validation
         while True:
             children_no=(input("How many children do you have under 12 years? "))
-            if not 0<= int (children_no) < 10 :
-                print("Children number should be between 0 and 10, please try again")
+            if not children_no.isdigit():
+                print("Your input should be a number, please try again")
             elif not children_no:
                 print("The field is empty, please type a valid input")
-            elif not children_no.isdigit():
-                print("Your input should be a number, please try again")
+            elif not 0<= int (children_no) < 10 :
+                print("Children number should be between 0 and 10, please try again")
             else :
                 break
         for i in range (int (children_no)):
@@ -239,13 +239,20 @@ class User:
                     print("the field is empty, please input a valid password")
                 else:
                     print("Your password is incorrect, please try again")
+        cursor.close()
+        connect1.close()
             
 
+    def child_info(self):
+        db_connect1=db_connect()
+        connect1 = db_connect1.connect_to_db()
 
+        #Starting the cursor
+        cursor = connect1.cursor(buffered=True)
         id_query = "SELECT user_id FROM users_parent WHERE email = %s"
         cursor.execute(id_query,(self.email, ))
         id_output = cursor.fetchone()
-        
+    
         child_query = "SELECT name FROM children WHERE user_id = %s"
         cursor.execute(child_query, (id_output[0],))
         child_output = cursor.fetchall()
@@ -254,17 +261,33 @@ class User:
             self.Child_details()
             self.Login()
             return
+        elif len(child_output) == 1:
+            print(f"You have one registred child: {child_output[0][0]}")
+            
+            while True:
+                self.child_choice = input(f"Would you love to add a child? Press 0 to do so and 1 to continue with {child_output[0][0]}: ")
+                if not self.child_choice.isdigit():
+                    print("Your choice should be a whole number, please try again")
+                elif not self.child_choice:
+                    print("The field is empty, please type a valid input")
+                elif not 0 <= int(self.child_choice) <= 1:
+                    print("Invalid choice, please choose a valid child number either 0 0r 1")     
+                else:
+                    break
         else:
+
             print("Here are your registered children:")
             for i, child in enumerate(child_output,start = 1):
                 print(f"{i}.{child[0]}")
             while True:
-                child_choice = input("Which child would you like to examine?(choose a number): ")
-                if not child_choice.isdigit():
+                print("Which child would you like to examine?(choose a number): ")
+                self.child_choice = input("If you would like to add a child, please press 0: ")
+
+                if not self.child_choice.isdigit():
                     print("Your choice should be a whole number, please try again")
-                elif not child_choice:
+                elif not self.child_choice:
                     print("The field is empty, please type a valid input")
-                elif not 1 <= int(child_choice) <= len(child_output):
+                elif not 0 <= int(self.child_choice) <= len(child_output):
                     print("Invalid choice, please choose a valid child number")     
                 else:
                     break
@@ -274,8 +297,12 @@ class User:
         connect1.close()
 
         #display the selected child
-        selected_child = child_output[int(child_choice)-1][0]
-        print(f"You have selected {selected_child} for examination.")
+        if self.child_choice == "0":
+            self.Child_details()
+            self.child_info()
+        else:
+            selected_child = child_output[int(self.child_choice)-1][0]
+            print(f"You have selected {selected_child} for examination.")
 
     #allows the user to access the app as a guest without necessarily registering
     def Guest(self):
@@ -323,9 +350,11 @@ class User:
             self.Reg_user()
             self.Child_details()
             self.Login()
+            self.child_info()
         elif self.user_choice== "2":
             print("Loading ...")
             self.Login()
+            self.child_info()
         elif self.user_choice== "3":
             print("Accesing app as guest ")
             self.Guest()
