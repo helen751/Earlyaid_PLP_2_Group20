@@ -118,6 +118,7 @@ class User:
         #starting the cursor
         cursor = connect1.cursor()
 
+        print("Loading...")
         print("Please provide your child's details for registration")  
 
         #children no entry and input validation
@@ -182,12 +183,12 @@ class User:
            #Commiting the insert changes
             connect1.commit()
         
-            print(f" Your child: {self.child_name} has been registered ")
+            print(f"Your child: {self.child_name} has been registered ")
 
         #closing the cursor and the database connection
         cursor.close()
         connect1.close()
-        print("All your children have been registered, and your account has been created")
+        print("All your children have been registered, and your account has been created\n")
 
     #login method which will allow the user access the app after confirming that they have registered.
     def Login(self):
@@ -197,7 +198,7 @@ class User:
         connect1 = db_connect1.connect_to_db()
 
         #Starting the cursor
-        cursor = connect1.cursor()
+        cursor = connect1.cursor(buffered=True)
 
         print(f"Welcome back ! Please login to your account")
 
@@ -219,10 +220,10 @@ class User:
         #Confirming if the user entered the right email
         login_query = "SELECT password FROM users_parent WHERE email =%s"
         cursor.execute(login_query, (self.email,))
-        output = cursor.fetchone()
+        output = cursor.fetchall()
 
         #Provides the user with three options if their email is not registered  
-        if output is None:
+        if not output :
             print("This email is not registered.")
             self.user_acess()
             
@@ -231,7 +232,7 @@ class User:
             while True:
                 self.password1 = input("Please input your account password: ")
                 #Checking if the user input the correct password
-                if self.password1 == output[0]:
+                if self.password1 == output[0][0]:
                     print("You have succesfully logged in. Welcome to Early Aid!\n ")
                     break
                 elif not self.password1:
