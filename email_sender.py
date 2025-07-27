@@ -60,14 +60,7 @@ If you did not sign up for EarlyAid or believe this message was sent to you by m
 
                 self.coloredMessage.print(f"Email sent to {parent_email} successfully!", "green")
 
-<<<<<<< HEAD
-    except Exception as e:  # Show an error message if there is a fail in sending the email
-        print(f"Error: Failed to send email to {parent_email}: {e}")
-    except smtplib.SMTPRecipientsRefused:  # Show an error message if the email address is not valid
-        print("The email address you entered is invalid. Please enter your email.")
-=======
         except Exception as e:  # Show an error message if there is a fail in sending the email
             print(f"Error: Failed to send email to {parent_email}: {e}")
         except smtplib.SMTPRecipientsRefused:  # Show an error message if the email address is not valid
             print("The email address you entered is invalid. Please enter your email.")
->>>>>>> 7842dab403bd34ffd6304480333384e7813a1c5c
