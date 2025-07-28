@@ -293,7 +293,7 @@ class User:
         else:
             print("Here are your registered children:")
             for i, child in enumerate(child_output,start = 1):
-                print(f"{i}.{child[1]}")
+                print(f"{i}.{child[1]} ({child[2]} yrs old)")
             while True:
                 print("Which child would you like to examine?(choose a number): ")
                 child_choice = input("Enter 0 if you want to add more children ")

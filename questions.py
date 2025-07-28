@@ -214,6 +214,8 @@ class question:
             self.coloredMessage.print("\n\tSaving your health details, please wait...", "blue")
             save_session.store_session_result(self.user_id, self.child_id, answers, email_suggestions, self.total_risk_level, self.parent_email)
 
-
+        else:
+            self.coloredMessage.print("\n\tThank you for using EarlyAid. We hope you enjoyed this!\n\n", "blue")
+            exit(2)
 
 
