@@ -14,6 +14,7 @@ import save_session
 class question:
     #the class constructor, defining and initialising all the class variables
     def __init__(self):
+        self.connection_error = None
         self.question_id_list = None
         self.connection = None
         self.questions_id = []
@@ -23,22 +24,24 @@ class question:
         self.coloredMessage = colored_message.ColoredMessage()
         self.age = 0
         self.child_name = None
-        self.parent_name = None
+        self.parent_email = None
         self.prev_diagnosis = None
         self.is_guest = None
         self.user_id = None
         self.child_id = None
+        self.total_risk_level = None
 
     #The function that fetches all questions according to child's age and set the class variables
     def ask_question(self, user_id, child_id, age, child_name, parent_email, is_guest, prev_diagnosis):
         answers = {}
         self.age = age
         self.child_name = child_name
-        self.parent_name = parent_email
+        self.parent_email = parent_email
         self.is_guest = is_guest
         self.prev_diagnosis = prev_diagnosis
         self.user_id = user_id
         self.child_id = child_id
+
 
         self.coloredMessage.print("Fetching questions...", "blue")
 
@@ -78,6 +81,8 @@ class question:
             self.coloredMessage.print("\n\tAnalysing your answers, please wait...\n", "blue")
             self.analyse_question(answers, age)
 
+        else:
+            self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
 
     #function to analyse the answers and risk levels
     def analyse_question(self, answers, age):
@@ -140,16 +145,19 @@ class question:
         short_topic = None
 
         if risk_level == "Low":
+            self.total_risk_level = 1
             short_topic = f"You don't need to panic. {self.child_name} is going through a mild reaction that you can manage for a few days"
             self.coloredMessage.print(f"\n\t_______RISK LEVEL: LOW_________"
                                       f"\n{short_topic}", "blue")
 
         elif risk_level == "Medium":
+            self.total_risk_level = 2
             short_topic = f"{self.child_name}'s symptoms are moderate, But it is important you monitor closely for any improvement or worsening"
             self.coloredMessage.print(f"\n\t_______RISK LEVEL: MEDIUM_________"
                                       f"\n {short_topic}", "yellow")
 
         elif risk_level == "High":
+            self.total_risk_level = 2
             short_topic = "Serious case identified here! you need to act immediately"
             self.coloredMessage.print("\n\t_______RISK LEVEL: HIGH_________"
                                       f"\n{short_topic}", "red")
@@ -195,16 +203,17 @@ class question:
                 print(f'\n\t Phone Number: {doctor["phone"]}'+f'\n\t Location: {doctor["location"]}'+f'\n\t Specialty: {doctor["specialty"]}\n')
                 print()
 
-                #if the user is registered, send their suggestion to their email and store the response in the database.
-                if not self.is_guest:
-                    answers = ', '.join(self.question_id_list)
-                    email_sender.EmailSender().send_email_to_parent(self.parent_name, self.child_name, risk_level, email_suggestions, short_topic, doctor_details)
-
-                    self.coloredMessage.print("\n\tSaving your health details, please wait...", "blue")
-                    save_session.store_session_result(self.user_id, self.child_id, answers, email_suggestions, risk_level)
-
-
-            #message to show if the database could not be accessed to fetch all suggestions.
             else:
                 self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
+
+        #if the user is registered, send their suggestion to their email and store the response in the database.
+        if not self.is_guest:
+            answers = ', '.join(map(str, self.question_id_list))
+            email_sender.EmailSender().send_email_to_parent(self.parent_email, self.child_name, risk_level, email_suggestions, short_topic, doctor_details)
+
+            self.coloredMessage.print("\n\tSaving your health details, please wait...", "blue")
+            save_session.store_session_result(self.user_id, self.child_id, answers, email_suggestions, self.total_risk_level, self.parent_email)
+
+
+
 

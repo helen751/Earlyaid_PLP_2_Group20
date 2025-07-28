@@ -1,12 +1,13 @@
 from datetime import datetime  # Generate a readable timestamp
 import mysql.connector
 from db_connect import db_connect
+import exit_or_restart
 
 # Establish and reuse the connection
 connect = db_connect()
 connection = connect.connect_to_db()
 
-def store_session_result(user_id, child_id, answer, suggestion, risk_score, timestamp=None):
+def store_session_result(user_id, child_id, answer, suggestion, risk_score, parent_email, timestamp=None):
     """
     Store the user session results, the user id and the child id into the earlyaid database
     """
@@ -40,3 +41,6 @@ def store_session_result(user_id, child_id, answer, suggestion, risk_score, time
         # Close the connection if it was opened
         if 'connection' in locals():
             connection.close()
+
+        #calling the last function to ask user if they want to exit the app or restart
+        exit_or_restart.exit_or_restart(user_id, parent_email)
