@@ -52,15 +52,15 @@ Earlyaid_PLP_2_Group20/
 
 - **Secure Registration & Login:**  
   Parents/guardians register and manage accounts securely with details:
-- Username
-- Email
-- Password.
+  - Username
+  - Email
+  - Password.
 
 - **Multiple Child Support:**  
   Add/manage several children with age-specific info. The user/parent add each childs:
-- Name
-- Age
-- Previous Diagnosis
+  - Name
+  - Age
+  - Previous Diagnosis
 
 - **Structured Symptom Checker:**  
   Answers a series of health related questions based on the child's age.
@@ -243,9 +243,8 @@ All team members contributed in developing this working application
 
 ---
 
-## 👩‍💻 Authors
+## 👩‍💻 Authors (Group 20, PLP EarlyAid Project)
 
-- *Group 20, PLP EarlyAid Project*
 - Helen Ugoeze Okereke
 - Francis Shyaka
 - Grace Karimi Njunge
@@ -257,7 +256,7 @@ All team members contributed in developing this working application
 
 ## 💡 Inspiration
 
-This project was developed as part of the **Peer Learning Project (PLP) Group 20** summative, in **ALU**
+This project was developed as part of the **Peer Learning Project (PLP) Group 20** summative, in **ALU.**
 The flowchart, schema diagram and screenshots are all in the document submitted
 
 ---
