@@ -228,7 +228,6 @@ class User:
         login_query = "SELECT password, user_id FROM users_parent WHERE email =%s"
         cursor.execute(login_query, (self.email,))
         output = cursor.fetchall()
-        self.parent_id = output[0][1]
 
         #Provides the user with three options if their email is not registered  
         if not output :
@@ -238,6 +237,7 @@ class User:
         else:
             #user password entry and input validation.
             while True:
+                self.parent_id = output[0][1]
                 self.password1 = input("Please input your account password: ")
                 #Checking if the user input the correct password
                 if self.password1 == output[0][0]:
@@ -280,7 +280,7 @@ class User:
 
             print(f"You have one registered child,{self.child_name}")
             while True:
-                child_choice = input(f"\nPress 0 if you want to add more children and 1 if you want to continue with {self.child_name} ")
+                child_choice = input(f"\nPress 0 if you want to add more children or 1 if you want to continue with {self.child_name}: ")
                 if not child_choice.isdigit():
                     self.coloredMessage.print("Your choice should be a whole number, please try again", "red")
                 elif not child_choice:
