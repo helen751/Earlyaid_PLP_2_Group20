@@ -31,7 +31,7 @@ def add_question(cursor):
         else:
             break
 
-    # Get valid age input
+    # Get valid age input (Not greater than 12)
     while True:
         try:
             start_age = int(input("Enter the start age for this question: "))
@@ -47,7 +47,7 @@ def add_question(cursor):
 
     risk_level = int(input("Enter the risk level (1-5): "))
 
-    # Ensure that the suggestion code is unique
+    # Ensure that the suggestion code is unique to every question
     while True:
         suggestion_code = input("Enter a unique suggestion code for this question (e.g., CUS1): ").strip().upper()
         cursor.execute("SELECT 1 FROM question_risks WHERE suggestion_code = %s", (suggestion_code,))
@@ -58,7 +58,7 @@ def add_question(cursor):
 
     suggestion_text = input("Enter the advice or suggestion for this question: ").strip()
 
-    # Insert the new question into the questions table
+    # Insert the new question added by the admin into the questions table
     cursor.execute("""
         INSERT INTO questions (start_age, end_age, question_text, option_a, option_b)
         VALUES (%s, %s, %s, %s, %s)
@@ -80,7 +80,7 @@ def add_question(cursor):
 
     print("Question, risk, and suggestion successfully added.")
 
-# This function is for deleting a question from the database
+# This function is for deleting a question from the database and it deletes associated risks and suggestions
 def delete_question(cursor):
     print("\nDeleting a question.")
     question_text = input("Enter the exact question text to delete: ").strip()
