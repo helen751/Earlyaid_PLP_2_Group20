@@ -1,29 +1,51 @@
+#importing the random class.
 import random
 
+#importing the database configuration file
 import db_connect
+#importing our colored custom message
 import colored_message
+#importing our email sending file
 import email_sender
-from email_sender import EmailSender
+
+#importing the saves responses files
+import save_session
 
 class question:
+    #the class constructor, defining and initialising all the class variables
     def __init__(self):
+        self.connection_error = None
+        self.question_id_list = None
         self.connection = None
         self.questions_id = []
+
+        #creating an instance of the dbconnect and colored message class
         self.db = db_connect.db_connect()
         self.coloredMessage = colored_message.ColoredMessage()
         self.age = 0
         self.child_name = None
-        self.parent_name = None
+        self.parent_email = None
+        self.prev_diagnosis = None
+        self.is_guest = None
+        self.user_id = None
+        self.child_id = None
+        self.total_risk_level = None
 
-    def ask_question(self, age, child_name, parent_email):
+    #The function that fetches all questions according to child's age and set the class variables
+    def ask_question(self, user_id, child_id, age, child_name, parent_email, is_guest, prev_diagnosis):
         answers = {}
         self.age = age
         self.child_name = child_name
-        self.parent_name = parent_email
+        self.parent_email = parent_email
+        self.is_guest = is_guest
+        self.prev_diagnosis = prev_diagnosis
+        self.user_id = user_id
+        self.child_id = child_id
+
 
         self.coloredMessage.print("Fetching questions...", "blue")
 
-        #connecting to the cloud database
+        #connecting to the Aiven cloud database
         self.connection = self.db.connect_to_db()
 
         if self.connection:
@@ -59,17 +81,19 @@ class question:
             self.coloredMessage.print("\n\tAnalysing your answers, please wait...\n", "blue")
             self.analyse_question(answers, age)
 
+        else:
+            self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
 
     #function to analyse the answers and risk levels
     def analyse_question(self, answers, age):
-        question_id_list = []
+        self.question_id_list = []
 
         #checking for questions the user answered YES to the symptoms
         for question_id, answer in answers.items():
             if answer == "1":
-                question_id_list.append(question_id)
+                self.question_id_list.append(question_id)
 
-        question_id_placeholders = ', '.join(['%s'] * len(question_id_list))
+        question_id_placeholders = ', '.join(['%s'] * len(self.question_id_list))
 
         #checking if the established database connection is still active
         if self.connection:
@@ -81,7 +105,7 @@ class question:
                 f"INNER JOIN suggestions s ON r.suggestion_code = s.suggestion_code "
                 f"WHERE r.min_age <= %s AND r.max_age >= %s AND r.question_id IN ({question_id_placeholders});"
             )
-            params = [age, age] + question_id_list
+            params = [age, age] + self.question_id_list
             #opening the connection and executing the query
             result = self.db.execute_select_query(self.connection, query, params)
 
@@ -92,6 +116,7 @@ class question:
             self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
 
 
+    #function to anlayse each question risk and get the right suggestion
     def analyse_risk(self, suggestions):
         risk_level = []
         total_risk_level = 0
@@ -110,24 +135,29 @@ class question:
         elif 3 in risk_level:
             risk = "High"
 
+        #calling the final suggestion function after analysing final risk levels
         self.final_suggestion(suggestions, risk)
 
 
+    #function to display the suggestions or advice, including risk level and messages.
     def final_suggestion(self, suggestions, risk_level):
         doctor_details = None
         short_topic = None
 
         if risk_level == "Low":
+            self.total_risk_level = 1
             short_topic = f"You don't need to panic. {self.child_name} is going through a mild reaction that you can manage for a few days"
             self.coloredMessage.print(f"\n\t_______RISK LEVEL: LOW_________"
                                       f"\n{short_topic}", "blue")
 
         elif risk_level == "Medium":
+            self.total_risk_level = 2
             short_topic = f"{self.child_name}'s symptoms are moderate, But it is important you monitor closely for any improvement or worsening"
             self.coloredMessage.print(f"\n\t_______RISK LEVEL: MEDIUM_________"
                                       f"\n {short_topic}", "yellow")
 
         elif risk_level == "High":
+            self.total_risk_level = 2
             short_topic = "Serious case identified here! you need to act immediately"
             self.coloredMessage.print("\n\t_______RISK LEVEL: HIGH_________"
                                       f"\n{short_topic}", "red")
@@ -147,7 +177,7 @@ class question:
             #check for a suitable doctor in the doctors database and refer the user
             if self.connection:
 
-                # query to get all quest risks and analyse
+                # query to get all question risks and analyse
                 query = (
                     f"SELECT name, specialty, phone, location "
                     f"FROM doctors "
@@ -173,16 +203,19 @@ class question:
                 print(f'\n\t Phone Number: {doctor["phone"]}'+f'\n\t Location: {doctor["location"]}'+f'\n\t Specialty: {doctor["specialty"]}\n')
                 print()
 
-                email_sender.EmailSender().send_email_to_parent(self.parent_name, self.child_name, risk_level, email_suggestions, short_topic, doctor_details)
-
-
-
-
             else:
                 self.coloredMessage.print("OOPs! It seems you lost your internet connection!", "red")
 
+        #if the user is registered, send their suggestion to their email and store the response in the database.
+        if not self.is_guest:
+            answers = ', '.join(map(str, self.question_id_list))
+            email_sender.EmailSender().send_email_to_parent(self.parent_email, self.child_name, risk_level, email_suggestions, short_topic, doctor_details)
+
+            self.coloredMessage.print("\n\tSaving your health details, please wait...", "blue")
+            save_session.store_session_result(self.user_id, self.child_id, answers, email_suggestions, self.total_risk_level, self.parent_email)
+
+        else:
+            self.coloredMessage.print("\n\tThank you for using EarlyAid. We hope you enjoyed this!\n\n", "blue")
+            exit(2)
 
 
-
-
-question().ask_question(1, "favour", "okerekehelenugoeze@gmail.com")

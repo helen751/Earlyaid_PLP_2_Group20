@@ -1,4 +1,8 @@
 import mysql.connector
+import colored_message
+
+coloredMessage = colored_message.ColoredMessage()
+
 
 def connect_db():
     try:
@@ -129,5 +133,25 @@ def main():
     conn.close()
     print("Done.")
 
-if __name__ == "__main__":
-    main()
+#the authorisation logic for admin access
+coloredMessage.print("\n\tWELCOME TO EARLY AID ADMIN PANEL\n", "blue")
+
+trial = 3
+i = 1
+correct_password = "earlyadmin"
+
+while i <= trial:
+    passw = input("Enter Admin password to proceed: ")
+
+    if passw == correct_password:
+        coloredMessage.print("\n\tAuthorisation Successful!", "green")
+        coloredMessage.print("\tloading the admin dashboard...", "green")
+        i = trial
+        main()
+
+    elif passw != correct_password and i == trial:
+        coloredMessage.print(f"You have tried the incorrect password {trial} times, SYSTEM LOCKED", "red")
+
+    elif passw != correct_password:
+        coloredMessage.print(f"Wrong password! ({trial-i} trials remaining)", "red")
+    i = i + 1
