@@ -250,7 +250,7 @@ All team members contributed in developing this working application
 - Grace Karimi Njunge
 - Erioluwa Mercy Akintayo 
 - Cindy Teta
-- Janna Vitaline
+- Bendou Janna Vitalina Soeur 
 
 ---
 
